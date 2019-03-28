@@ -8,11 +8,11 @@ class BurgerBuilder extends Component {
     super(props);
     this.state = {
       ingredients: {
-        pickles: 0,
-        lettuce: 0,
-        tomato: 0,
-        cheese: 0,
-        meat: 0
+        pickles: 1,
+        lettuce: 1,
+        tomato: 2,
+        cheese: 1,
+        meat: 1
       }
     }
   }
@@ -20,9 +20,17 @@ class BurgerBuilder extends Component {
     return (
       <Aux>
         <Burger ingredients={this.state.ingredients}></Burger>
-        <BuildControls ingredients={this.state.ingredients}></BuildControls>
+        <BuildControls ingredients={this.state.ingredients} onBuildControlClick={this.onBuildControlClick.bind(this)}></BuildControls>
       </Aux>
     );
+  }
+  onBuildControlClick(targetIngredient, value){
+    let newIngredients = Object.assign(this.state.ingredients);
+    newIngredients[targetIngredient] += value;
+    if(newIngredients[targetIngredient] < 0){
+      newIngredients[targetIngredient] = 0;
+    }
+    this.setState({ingredients: newIngredients});
   }
 }
 
