@@ -1,23 +1,26 @@
 import React from 'react';
 import style from './Burger.module.css';
-import Ingredient from '../Ingredients/Ingredient';
+import Ingredient from './Ingredients/Ingredient';
 
 const Burger = (props) => {
-  let Ingredients = Object.keys(props.ingredients)
-    .map(IngredientType => {
-      return [...Array(props.ingredients[IngredientType])].map((_, i)=>{
-        return <Ingredient type={IngredientType} key={IngredientType + i}/>
-      });
-    })
-    .reduce((arr, el)=>{return arr.concat(el)}, []);
-  if(Ingredients.length === 0){
-    Ingredients = (<p>Please Add Ingredients</p>);
+  let RenderedIngredients = [];
+  let Ingredients = props.ingredients
+  let IngredientTypes = Object.keys(Ingredients);
+  
+  IngredientTypes.forEach(el=>{
+    for(let i = 0; i < Ingredients[el]; i++){
+      RenderedIngredients.push(<Ingredient type={el} key={el.toString() + i}/>)
+    }
+  });
+
+  if(RenderedIngredients.length === 0){
+    RenderedIngredients = (<p>Please Add Ingredients</p>);
   }
 
   return(
     <div className={style.container}>
       <Ingredient type="bun-top"/>
-      {Ingredients}
+      {RenderedIngredients}
       <Ingredient type="bun-bottom"/>
     </div>
   );
