@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import Aux from '../../Higher Order Components/Aux';
+import Modal from '../../UI/Modal/Modal';
+import OrderSummary from './OrderSummary/OrderSummary';
 import Burger from './Burger/Burger';
 import BuildControls from './BuildControls/BuildControls';
 import IngredientProfile from '../../../Objects/IngredientProfile';
@@ -24,15 +26,22 @@ class BurgerBuilder extends Component {
         cheese: 2,
         meat: 3
       },
-      totalPrice: 0
+      totalPrice: 0,
+      isPurchasable: true,
+      isPurchasing: false
     }
-  }
-  componentDidMount(){
-    this.setState({totalPrice: calculateTotalPrice(this.state.ingredients)});
   }
   render(){
     return (
       <Aux>
+        <Modal 
+          show={this.state.isPurchasing} 
+          click={this.onCancelClick}>
+          <OrderSummary 
+            ingredients={this.state.ingredients}
+            acceptClick={this.onAcceptClick}
+            cancelClick={this.onCancelClick}/>
+        </Modal>
         <Burger 
           ingredients={this.state.ingredients}
         />
@@ -40,29 +49,47 @@ class BurgerBuilder extends Component {
           ingredients={this.state.ingredients} 
           profiles={INGREDIENT_PROFILES}
           price={this.state.totalPrice}
-          onBuildControlClick={this.onBuildControlClick.bind(this)}
+          onBuildControlClick={this.onBuildControlClick}
+          isPurchasable={this.state.isPurchasable}
+          onOrderClick={this.onOrderClick}
         />
       </Aux>
     );
   }
-  onBuildControlClick(targetIngredient, value){
+  componentDidMount(){
+    this.setState({totalPrice: calculateTotalPrice(this.state.ingredients)});
+  }
+  onBuildControlClick = (targetIngredient, value) => {
     let IngredientValue = this.state.ingredients[targetIngredient];
     const IngredientMin = INGREDIENT_PROFILES[targetIngredient].min;
     const IngredientMax = INGREDIENT_PROFILES[targetIngredient].max 
-    const stateCopy = Object.assign(this.state.ingredients);
+    const IngredientCopy = Object.assign(this.state.ingredients);
 
     IngredientValue+=value;
 
     if(IngredientValue<IngredientMin){IngredientValue=IngredientMin}
     else if(IngredientValue>IngredientMax){IngredientValue=IngredientMax}
 
-    stateCopy[targetIngredient] = IngredientValue;
-    const totalPrice = calculateTotalPrice(stateCopy);
+    IngredientCopy[targetIngredient] = IngredientValue;
+    const totalPrice = calculateTotalPrice(IngredientCopy);
 
-    this.setState({ingredients: stateCopy, totalPrice: totalPrice});
+    this.setState({ingredients: IngredientCopy, totalPrice: totalPrice, isPurchasable: calculatePurchasable(IngredientCopy)});
+  }
+  onOrderClick = () => {
+    this.setState({isPurchasing: true});
+  }
+  onAcceptClick = () => {
+    console.log('onAcceptClick() Fired');
+  }
+  onCancelClick = () => {
+    console.log('onCancelClick() Fired');
+    this.setState({isPurchasing: false});
   }
 }
-
+function calculatePurchasable(ingredients){
+  let values = Object.values(ingredients);
+  return values.reduce((acc, cur)=>{return acc+=cur}, 0);
+}
 function calculateTotalPrice(ingredients){
   const ingredientKeys = Object.keys(ingredients);
   const totalPrice = ingredientKeys.map(el=>{

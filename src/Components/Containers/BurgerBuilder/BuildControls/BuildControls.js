@@ -22,6 +22,13 @@ const BuildControls = (props) => {
     <div className={styles.BuildControls}>
       <p>Price: ${props.price}</p>
       {RenderedIngredientControls}
+      <button 
+        className={styles.OrderButton}
+        disabled={!props.isPurchasable}
+        onClick={()=>props.onOrderClick()}
+      >
+        Place Order
+      </button>
     </div>
   )
 }
