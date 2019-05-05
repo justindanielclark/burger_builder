@@ -18,11 +18,12 @@ const OrderSummary = (props)=>{
   return(
     <Aux>
       <h3>Your Order</h3>
-      <p>A Delicious Burger With The Following Ingredients:</p>
+      <p className={styles.OrderDetails}>A Delicious Burger With The Following Ingredients:</p>
       <ul>
         {ingredientSummary}
       </ul>
-      <p>Proceed to Checkout?</p>
+      <p className={styles.OrderDetails}>Total Price: ${props.price}</p>
+      <p className={styles.OrderDetails}>Proceed to Checkout?</p>
       <div className={styles.ButtonContainer}>
         <Button 
           type='Success' 

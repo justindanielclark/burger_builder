@@ -40,7 +40,8 @@ class BurgerBuilder extends Component {
           <OrderSummary 
             ingredients={this.state.ingredients}
             acceptClick={this.onAcceptClick}
-            cancelClick={this.onCancelClick}/>
+            cancelClick={this.onCancelClick}
+            price={this.state.totalPrice}/>
         </Modal>
         <Burger 
           ingredients={this.state.ingredients}
@@ -82,7 +83,6 @@ class BurgerBuilder extends Component {
     console.log('onAcceptClick() Fired');
   }
   onCancelClick = () => {
-    console.log('onCancelClick() Fired');
     this.setState({isPurchasing: false});
   }
 }
