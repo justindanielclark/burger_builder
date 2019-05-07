@@ -5,6 +5,7 @@ import OrderSummary from './OrderSummary/OrderSummary';
 import Burger from './Burger/Burger';
 import BuildControls from './BuildControls/BuildControls';
 import IngredientProfile from '../../../Objects/IngredientProfile';
+import axios from '../../../Axios/axios-orders';
 
 const INGREDIENT_PROFILES = {
   pickles: new IngredientProfile(.35, 0, 2),
@@ -20,11 +21,11 @@ class BurgerBuilder extends Component {
     super(props);
     this.state = {
       ingredients: {
-        pickles: 2,
-        lettuce: 1,
-        tomato: 1,
-        cheese: 2,
-        meat: 3
+        pickles: 0,
+        lettuce: 0,
+        tomato: 0,
+        cheese: 0,
+        meat: 0
       },
       totalPrice: 0,
       isPurchasable: true,
@@ -34,7 +35,7 @@ class BurgerBuilder extends Component {
   render(){
     return (
       <Aux>
-        <Modal 
+        <Modal
           show={this.state.isPurchasing} 
           click={this.onCancelClick}>
           <OrderSummary 
@@ -80,7 +81,29 @@ class BurgerBuilder extends Component {
     this.setState({isPurchasing: true});
   }
   onAcceptClick = () => {
-    console.log('onAcceptClick() Fired');
+    const order = {
+      ingredients: this.state.ingredients,
+      price: this.state.totalPrice,
+      customer: {
+        name: "Justin Clark",
+        address: {
+          numerical: 15007,
+          street1: 'Eucalyptus Ave',
+          street2: null,
+          city: 'Bellflower',
+          state: 'CA',
+          ZIP: 90706
+        },
+        email: 'justindanielclark@gmail.com',
+        deliveryMethod: 'fastest'
+      }
+    };
+    axios.post('/orders.json', order)
+      .then(response=>{
+        console.dir(response);
+      }).catch(error=>{
+        console.dir(error);
+      });
   }
   onCancelClick = () => {
     this.setState({isPurchasing: false});

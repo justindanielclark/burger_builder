@@ -14,7 +14,7 @@ const Burger = (props) => {
   });
 
   if(RenderedIngredients.length === 0){
-    RenderedIngredients = (<p>Please Add Ingredients</p>);
+    RenderedIngredients = (<div className={style.notice}>Please Add Ingredients</div>);
   }
 
   return(

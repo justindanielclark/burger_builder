@@ -1,8 +1,16 @@
 .container{
   max-width: 300px;
-  height: 400px;
+  height: 300px;
   margin: 10px auto 10px auto;
-  background-color: grey;
   padding-top: 15px;
   padding-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+.notice {
+  width: 200px;
+  text-align: center;
+  margin: 10px auto;
 }

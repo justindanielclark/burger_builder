@@ -5,11 +5,8 @@ import Toolbar from '../Containers/Navigation/Toolbar/Toolbar';
 import SideDrawer from '../Containers/Navigation/SideDrawer/SideDrawer';
 
 class Layout extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      isSideDrawerOpened: true
-    }
+  state = {
+    isSideDrawerOpened: false
   }
   sideDrawerOpenHandler = () => {
     this.setState({isSideDrawerOpened: true});
