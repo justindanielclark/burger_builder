@@ -1,8 +1,8 @@
-import Aux from '../Higher Order Components/Aux';
+import Aux from '../Aux/Aux';
 import styles from './Layout.module.css';
 import React, {Component} from 'react';
-import Toolbar from '../Containers/Navigation/Toolbar/Toolbar';
-import SideDrawer from '../Containers/Navigation/SideDrawer/SideDrawer';
+import Toolbar from '../../Containers/Navigation/Toolbar/Toolbar';
+import SideDrawer from '../../Containers/Navigation/SideDrawer/SideDrawer';
 
 class Layout extends Component {
   state = {

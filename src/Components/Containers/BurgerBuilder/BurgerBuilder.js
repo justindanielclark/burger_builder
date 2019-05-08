@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
-import Aux from '../../Higher Order Components/Aux';
+import Aux from '../../Higher Order Components/Aux/Aux';
 import Modal from '../../UI/Modal/Modal';
 import OrderSummary from './OrderSummary/OrderSummary';
 import Burger from './Burger/Burger';
 import BuildControls from './BuildControls/BuildControls';
 import IngredientProfile from '../../../Objects/IngredientProfile';
+import Spinner from '../../UI/Spinner/Spinner';
 import axios from '../../../Axios/axios-orders';
+import ErrorHandlerModal from '../../Higher Order Components/ErrorHandlerModal/ErrorHandlerModal';
+import styles from './BurgerBuilder.module.css';
 
 const INGREDIENT_PROFILES = {
   pickles: new IngredientProfile(.35, 0, 2),
@@ -20,46 +23,66 @@ class BurgerBuilder extends Component {
   constructor(props){
     super(props);
     this.state = {
-      ingredients: {
-        pickles: 0,
-        lettuce: 0,
-        tomato: 0,
-        cheese: 0,
-        meat: 0
-      },
+      ingredients: null,
       totalPrice: 0,
-      isPurchasable: true,
-      isPurchasing: false
+      isPurchasable: false,
+      isPurchasing: false,
+      loading: false,
+      error: false
     }
   }
   render(){
+    let modalContent = null;
+    let burgerContent = this.state.error ? <div className={styles.FailureMessage}>Critical Application Error: Unable to Connect to Server</div>: <Spinner big={true}/>
+    if (this.state.ingredients !== null) {
+      burgerContent = (
+        <Aux>
+          <Burger 
+            ingredients={this.state.ingredients}
+          />
+          <BuildControls 
+            ingredients={this.state.ingredients} 
+            profiles={INGREDIENT_PROFILES}
+            price={this.state.totalPrice}
+            onBuildControlClick={this.onBuildControlClick}
+            isPurchasable={this.state.isPurchasable}
+            onOrderClick={this.onOrderClick}
+          />
+        </Aux>
+      )
+      if (this.state.loading){
+        modalContent = <Spinner/>
+      } else {
+        modalContent = <OrderSummary 
+          ingredients={this.state.ingredients}
+          acceptClick={this.onAcceptClick}
+          cancelClick={this.onCancelClick}
+          price={this.state.totalPrice}/>
+      }
+    }
+    
     return (
       <Aux>
         <Modal
           show={this.state.isPurchasing} 
           click={this.onCancelClick}>
-          <OrderSummary 
-            ingredients={this.state.ingredients}
-            acceptClick={this.onAcceptClick}
-            cancelClick={this.onCancelClick}
-            price={this.state.totalPrice}/>
+          {modalContent}
         </Modal>
-        <Burger 
-          ingredients={this.state.ingredients}
-        />
-        <BuildControls 
-          ingredients={this.state.ingredients} 
-          profiles={INGREDIENT_PROFILES}
-          price={this.state.totalPrice}
-          onBuildControlClick={this.onBuildControlClick}
-          isPurchasable={this.state.isPurchasable}
-          onOrderClick={this.onOrderClick}
-        />
+        {burgerContent}
       </Aux>
     );
   }
   componentDidMount(){
-    this.setState({totalPrice: calculateTotalPrice(this.state.ingredients)});
+    axios.get('https://react-my-burger-15ecf.firebaseio.com/ingredients.json')
+      .then(response=>{
+        setTimeout(()=>{
+          this.setState({ingredients: response.data, totalPrice: calculateTotalPrice(response.data), isPurchasable: calculatePurchasable(response.data)})
+        }, 500)
+        // this.setState({ingredients: response.data, totalPrice: calculateTotalPrice(response.data), isPurchasable: calculatePurchasable(response.data)})
+      })
+      .catch(error=>{
+        this.setState({error: true});
+      });
   }
   onBuildControlClick = (targetIngredient, value) => {
     let IngredientValue = this.state.ingredients[targetIngredient];
@@ -81,6 +104,7 @@ class BurgerBuilder extends Component {
     this.setState({isPurchasing: true});
   }
   onAcceptClick = () => {
+    this.setState({loading: true});
     const order = {
       ingredients: this.state.ingredients,
       price: this.state.totalPrice,
@@ -103,6 +127,8 @@ class BurgerBuilder extends Component {
         console.dir(response);
       }).catch(error=>{
         console.dir(error);
+      }).finally(()=>{
+        this.setState({loading: false, isPurchasing: false});
       });
   }
   onCancelClick = () => {
@@ -121,4 +147,4 @@ function calculateTotalPrice(ingredients){
   return (totalPrice+BASE_PRICE).toFixed(2);
 }
 
-export default BurgerBuilder;
+export default ErrorHandlerModal(BurgerBuilder, axios);

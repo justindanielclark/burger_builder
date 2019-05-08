@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './Logo.module.css';
-import logoPath from '../../Assets/Images/burger-logo.png';
+import logoPath from '../../../Assets/Images/burger-logo.png'
 
 const Logo = (props) => {
   return (

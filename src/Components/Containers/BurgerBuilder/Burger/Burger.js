@@ -15,6 +15,19 @@ const Burger = (props) => {
 
   if(RenderedIngredients.length === 0){
     RenderedIngredients = (<div className={style.notice}>Please Add Ingredients</div>);
+  } else {
+    const ingredientOrderChart = {
+      pickles: 0,
+      lettuce: 1,
+      tomato: 2,
+      cheese: 3,
+      meat: 4
+    }
+    RenderedIngredients.sort((itemA, itemB)=>{
+      let a = ingredientOrderChart[itemA.props.type];
+      let b = ingredientOrderChart[itemB.props.type];
+      return a<b ? -1 : (a>b ? 1 : 0);
+    });
   }
 
   return(
